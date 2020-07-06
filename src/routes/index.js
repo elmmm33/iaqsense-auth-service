@@ -1,11 +1,10 @@
 const Router = require("koa-router");
 
 const router = new Router();
-const ctrl = require("../controller").session;
+const authCtrl = require("../controller").session;
 
-router.post("/session", ctrl.login);
-router.post("/session/guest", ctrl.guestLogin);
-router.get("/session", ctrl.verify);
-
+router.post("/session", authCtrl.login);
+router.post("/session/guest", authCtrl.guestLogin);
+router.get("/session", authCtrl.verify);
 
 module.exports = router.routes();

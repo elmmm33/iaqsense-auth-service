@@ -1,13 +1,10 @@
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
-const {
-  jwtSecret
-} = require("../../utils/user-help-function");
-const { HTTP_STATUS } = require('../../lib/constants');
+const { jwtSecret } = require("../../utils/user-help-function");
+const { HTTP_STATUS } = require("../../lib/constants");
 moment.tz.setDefault("Asia/Hong_Kong");
 
-
-const guestLogin = async ctx => {
+module.exports = async ctx => {
   try {
     const payload = {
       role: 0 // 0: guest
@@ -17,7 +14,7 @@ const guestLogin = async ctx => {
     });
 
     ctx.status = HTTP_STATUS.OK;
-    ctx.body={
+    ctx.body = {
       success: true,
       msg: "Successfully Login",
       result: {
@@ -28,7 +25,7 @@ const guestLogin = async ctx => {
     };
   } catch (e) {
     ctx.status = HTTP_STATUS.UNAUTHORIZED;
-    ctx.body={
+    ctx.body = {
       success: false,
       msg: e.message.toString() || "Login failed",
       result: null,
@@ -36,5 +33,3 @@ const guestLogin = async ctx => {
     };
   }
 };
-
-module.exports = guestLogin;

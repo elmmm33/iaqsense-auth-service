@@ -3,14 +3,14 @@ const {
   jwtVerify,
   sessionExpireDate
 } = require("../../lib/user-help-function");
-const { HTTP_STATUS } = require('../../lib/constants');
+const { HTTP_STATUS } = require("../../lib/constants");
 const Firestore = require("@google-cloud/firestore");
 const db = require("../../lib/firestore");
 
 const moment = require("moment");
 moment.tz.setDefault("Asia/Hong_Kong");
 
-const verify = async ctx => {
+module.exports = async ctx => {
   try {
     if (ctx.request.headers.authorization) {
       const token = ctx.request.headers.authorization.split(" ")[1];
@@ -21,21 +21,30 @@ const verify = async ctx => {
       });
       if (jwtRes) {
         const { id } = jwtRes;
-        const sessions = await db.collection('sessions')
+        const sessions = await db
+          .collection("sessions")
           .where("user", "==", db.doc(`users/${id}`))
           .where("expireTime", ">=", Firestore.Timestamp.now())
           .get();
         if (sessions) {
           // update expired date
           let session, sessionId;
-          sessions.forEach(doc => { sessionId = doc.id;; session = doc.data() });
+          sessions.forEach(doc => {
+            sessionId = doc.id;
+            session = doc.data();
+          });
 
           try {
-            await db.collection('sessions').doc(sessionId).update({ expiredTime: Firestore.Timestamp.fromDate(expiredTime) })
+            await db
+              .collection("sessions")
+              .doc(sessionId)
+              .update({
+                expiredTime: Firestore.Timestamp.fromDate(expiredTime)
+              });
           } catch (err) {
             logger.error(err);
             throw new Error("update Session Expired Date Failed");
-          };
+          }
 
           ctx.status = HTTP_STATUS.OK;
           ctx.body = {
@@ -63,5 +72,3 @@ const verify = async ctx => {
     };
   }
 };
-
-module.exports = verify;

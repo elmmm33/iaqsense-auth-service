@@ -1,8 +1,8 @@
 // const crypto = require("crypto");
-const logger = require('../../lib/logger');
+const logger = require("../../lib/logger");
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
-const { HTTP_STATUS } = require('../../lib/constants');
+const { HTTP_STATUS } = require("../../lib/constants");
 
 const {
   jwtSecret,
@@ -15,15 +15,18 @@ const db = require("../../lib/firestore");
 
 moment.tz.setDefault("Asia/Hong_Kong");
 
-const login = async ctx => {
+module.exports = async ctx => {
   const { email, password } = ctx.request.body;
   try {
     const hashPassword = hashToSha256(password);
-    const users = await db.collection("users").where("email", "==", email).get();
+    const users = await db
+      .collection("users")
+      .where("email", "==", email)
+      .get();
     let user, userId;
     users.forEach(doc => {
       userId = doc.id;
-      user = doc.data()
+      user = doc.data();
     });
     if (user) {
       if (user.password === hashPassword) {
@@ -41,33 +44,44 @@ const login = async ctx => {
         let expiredTime = sessionExpireDate(12);
         logger.info(userId, user.email, expiredTime);
 
-        const sessions = await db.collection('sessions').where("user", "==", db.doc(`users/${userId}`)).get();
+        const sessions = await db
+          .collection("sessions")
+          .where("user", "==", db.doc(`users/${userId}`))
+          .get();
         if (sessions) {
           // update session expired date
           let session, sessionId;
-          sessions.forEach(doc => { sessionId = doc.id;; session = doc.data() });
+          sessions.forEach(doc => {
+            sessionId = doc.id;
+            session = doc.data();
+          });
 
-          try{
-            await db.collection('sessions').doc(sessionId).update({ expiredTime: Firestore.Timestamp.fromDate(expiredTime) })
-          } catch(err){
+          try {
+            await db
+              .collection("sessions")
+              .doc(sessionId)
+              .update({
+                expiredTime: Firestore.Timestamp.fromDate(expiredTime)
+              });
+          } catch (err) {
             logger.error(err);
             throw new Error("update Session Expired Date Failed");
-          };
+          }
         } else {
-          try{
+          try {
             await db.collection("sessions").add({
               user: db.doc(`users/${userId}`),
               token,
               expiredTime: Firestore.Timestamp.fromDate(expiredTime)
             });
-          } catch(err) {
+          } catch (err) {
             logger.error(err);
             throw new Error("create new user token failed");
           }
         }
 
         ctx.status = HTTP_STATUS.OK;
-        ctx.body={
+        ctx.body = {
           success: true,
           msg: "Successfully Login",
           result: {
@@ -84,7 +98,7 @@ const login = async ctx => {
     }
   } catch (e) {
     ctx.status = HTTP_STATUS.UNAUTHORIZED;
-    ctx.body={
+    ctx.body = {
       success: false,
       msg: e.message.toString() || "Login failed",
       result: null,
@@ -92,5 +106,3 @@ const login = async ctx => {
     };
   }
 };
-
-module.exports = login;
