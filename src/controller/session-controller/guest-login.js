@@ -1,8 +1,7 @@
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
-const { jwtSecret } = require("../../utils/user-help-function");
+const { jwtSecret } = require("../../lib/user-help-function");
 const { HTTP_STATUS } = require("../../lib/constants");
-moment.tz.setDefault("Asia/Hong_Kong");
 
 module.exports = async ctx => {
   try {

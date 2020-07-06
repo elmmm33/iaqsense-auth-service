@@ -18,7 +18,7 @@ module.exports = async ctx => {
     .collection("users")
     .where("email", "==", email)
     .get();
-  if (users) {
+  if (!users.empty) {
     ctx.status = HTTP_STATUS.BAD_REQUEST;
     ctx.body = {
       success: false,

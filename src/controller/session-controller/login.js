@@ -13,7 +13,7 @@ const {
 const Firestore = require("@google-cloud/firestore");
 const db = require("../../lib/firestore");
 
-moment.tz.setDefault("Asia/Hong_Kong");
+// moment.tz.setDefault("Asia/Hong_Kong");
 
 module.exports = async ctx => {
   const { email, password } = ctx.request.body;
@@ -48,14 +48,13 @@ module.exports = async ctx => {
           .collection("sessions")
           .where("user", "==", db.doc(`users/${userId}`))
           .get();
-        if (sessions) {
+        let session, sessionId;
+        sessions.forEach(doc => {
+          sessionId = doc.id;
+          session = doc.data();
+        });
+        if (sessionId) {
           // update session expired date
-          let session, sessionId;
-          sessions.forEach(doc => {
-            sessionId = doc.id;
-            session = doc.data();
-          });
-
           try {
             await db
               .collection("sessions")

@@ -13,8 +13,14 @@ module.exports = async ctx => {
       .collection("users")
       .where("email", "==", email)
       .get();
-    if (users) {
-      if (users.isVerified === 1) {
+    // update user status
+    let user, userId;
+    users.forEach(doc => {
+      userId = doc.id;
+      user = doc.data();
+    });
+    if (user) {
+      if (user.isVerified === 1) {
         ctx.body = fs.createReadStream(
           path.join(__dirname + "/verify-ok.html")
         );
@@ -23,13 +29,7 @@ module.exports = async ctx => {
           .collection("verificationtoken")
           .where("token", "==", token)
           .get();
-        if (tokens) {
-          // update user status
-          let user, userId;
-          users.forEach(doc => {
-            userId = doc.id;
-            user = doc.data();
-          });
+        if (!tokens.empty) {
           await db
             .collection("users")
             .doc(userId)

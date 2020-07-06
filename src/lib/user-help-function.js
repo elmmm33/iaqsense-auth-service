@@ -3,7 +3,6 @@ const moment = require("moment");
 const jwt = require("jsonwebtoken");
 const sg = require("@sendgrid/mail");
 
-moment.tz.setDefault("Asia/Hong_Kong");
 sg.setApiKey(
   "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"
 );
@@ -26,7 +25,8 @@ const jwtVerify = (token, jwtSecret) => {
 
 const sessionExpireDate = period => {
   return moment()
-    .add(period, "hours").toDate();
+    .add(period, "hours")
+    .toDate();
   // .format("YYYY-MM-DD HH:mm:ss");
 };
 

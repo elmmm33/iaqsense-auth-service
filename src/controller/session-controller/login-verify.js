@@ -1,3 +1,4 @@
+const moment = require("moment");
 const {
   jwtSecret,
   jwtVerify,
@@ -6,9 +7,6 @@ const {
 const { HTTP_STATUS } = require("../../lib/constants");
 const Firestore = require("@google-cloud/firestore");
 const db = require("../../lib/firestore");
-
-const moment = require("moment");
-moment.tz.setDefault("Asia/Hong_Kong");
 
 module.exports = async ctx => {
   try {
@@ -26,14 +24,14 @@ module.exports = async ctx => {
           .where("user", "==", db.doc(`users/${id}`))
           .where("expireTime", ">=", Firestore.Timestamp.now())
           .get();
-        if (sessions) {
-          // update expired date
-          let session, sessionId;
-          sessions.forEach(doc => {
-            sessionId = doc.id;
-            session = doc.data();
-          });
 
+        let session, sessionId;
+        sessions.forEach(doc => {
+          sessionId = doc.id;
+          session = doc.data();
+        });
+        if (sessionId) {
+          // update expired date
           try {
             await db
               .collection("sessions")
