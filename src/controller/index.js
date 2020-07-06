@@ -1,5 +1,5 @@
-const gateway = require("./dataingest-controller");
+const session = require("./session-controller");
 
 module.exports = {
-  gateway
+  session
 };
