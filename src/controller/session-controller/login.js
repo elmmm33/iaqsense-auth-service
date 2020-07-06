@@ -1,25 +1,29 @@
-// const User = require("../../models").User;
-// const Session = require("../../models").Session;
-const crypto = require("crypto");
+// const crypto = require("crypto");
+const logger = require('../../lib/logger');
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
+const { HTTP_STATUS } = require('../../lib/constants');
 
 const {
   jwtSecret,
   hashToSha256,
   sessionExpireDate
-} = require("../../utils/user-help-function");
-moment.tz.setDefault("Asia/Hong_Kong");
-Sequelize.DATE.prototype._stringify = function _stringify(date, options) {
-  return this._applyTimezone(date, options).format("YYYY-MM-DD HH:mm:ss.SSS");
-};
+} = require("../../lib/user-help-function");
 
-const login = async (req, res) => {
-  const { email, password } = req.body;
+const Firestore = require("@google-cloud/firestore");
+const db = require("../../lib/firestore");
+
+moment.tz.setDefault("Asia/Hong_Kong");
+
+const login = async ctx => {
+  const { email, password } = ctx.request.body;
   try {
     const hashPassword = hashToSha256(password);
-    const user = await User.findOne({
-      where: { email }
+    const users = await db.collection("users").where("email", "==", email).get();
+    let user, userId;
+    users.forEach(doc => {
+      userId = doc.id;
+      user = doc.data()
     });
     if (user) {
       if (user.password === hashPassword) {
@@ -34,29 +38,36 @@ const login = async (req, res) => {
           expiresIn: "5d"
         });
 
-        let expiredAt = sessionExpireDate(12);
-        console.log(expiredAt);
-        let session = await Session.findOne({
-          where: { userId: user.id }
-        });
-        if (session) {
+        let expiredTime = sessionExpireDate(12);
+        logger.info(userId, user.email, expiredTime);
+
+        const sessions = await db.collection('sessions').where("user", "==", db.doc(`users/${userId}`)).get();
+        if (sessions) {
           // update session expired date
-          await session.update({ expiredAt }).catch(err => {
-            console.log(err);
+          let session, sessionId;
+          sessions.forEach(doc => { sessionId = doc.id;; session = doc.data() });
+
+          try{
+            await db.collection('sessions').doc(sessionId).update({ expiredTime: Firestore.Timestamp.fromDate(expiredTime) })
+          } catch(err){
+            logger.error(err);
             throw new Error("update Session Expired Date Failed");
-          });
+          };
         } else {
-          await Session.create({
-            userId: user.id,
-            token,
-            expiredAt
-          }).catch(err => {
-            console.log(err);
+          try{
+            await db.collection("sessions").add({
+              user: db.doc(`users/${userId}`),
+              token,
+              expiredTime: Firestore.Timestamp.fromDate(expiredTime)
+            });
+          } catch(err) {
+            logger.error(err);
             throw new Error("create new user token failed");
-          });
+          }
         }
 
-        res.json({
+        ctx.status = HTTP_STATUS.OK;
+        ctx.body={
           success: true,
           msg: "Successfully Login",
           result: {
@@ -64,7 +75,7 @@ const login = async (req, res) => {
             ...payload
           },
           moment: moment().format()
-        });
+        };
       } else {
         throw new Error("Invalid password."); //invalid password
       }
@@ -72,12 +83,13 @@ const login = async (req, res) => {
       throw new Error("Invalid email."); //invalid email
     }
   } catch (e) {
-    res.json({
+    ctx.status = HTTP_STATUS.UNAUTHORIZED;
+    ctx.body={
       success: false,
       msg: e.message.toString() || "Login failed",
       result: null,
       moment: moment().format()
-    });
+    };
   }
 };
 

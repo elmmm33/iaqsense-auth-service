@@ -1,20 +1,13 @@
-const User = require("../../models").User;
-const GuestSession = require("../../models").GuestSession;
-const crypto = require("crypto");
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
-const Sequelize = require("sequelize");
 const {
-  jwtSecret,
-  hashToSha256,
-  sessionExpireDate
+  jwtSecret
 } = require("../../utils/user-help-function");
+const { HTTP_STATUS } = require('../../lib/constants');
 moment.tz.setDefault("Asia/Hong_Kong");
-Sequelize.DATE.prototype._stringify = function _stringify(date, options) {
-  return this._applyTimezone(date, options).format("YYYY-MM-DD HH:mm:ss.SSS");
-};
 
-const guestLogin = async (req, res) => {
+
+const guestLogin = async ctx => {
   try {
     const payload = {
       role: 0 // 0: guest
@@ -23,16 +16,8 @@ const guestLogin = async (req, res) => {
       expiresIn: "1h"
     });
 
-    // let expiredAt = sessionExpireDate(1);
-    // await GuestSession.create({
-    //   token,
-    //   expiredAt
-    // }).catch(err => {
-    //   console.log(err);
-    //   throw new Error("create guest token failed");
-    // });
-
-    res.json({
+    ctx.status = HTTP_STATUS.OK;
+    ctx.body={
       success: true,
       msg: "Successfully Login",
       result: {
@@ -40,14 +25,15 @@ const guestLogin = async (req, res) => {
         ...payload
       },
       moment: moment().format()
-    });
+    };
   } catch (e) {
-    res.json({
+    ctx.status = HTTP_STATUS.UNAUTHORIZED;
+    ctx.body={
       success: false,
       msg: e.message.toString() || "Login failed",
       result: null,
       moment: moment().format()
-    });
+    };
   }
 };
 

@@ -8,4 +8,4 @@ router.post("/session/guest", ctrl.guestLogin);
 router.get("/session", ctrl.verify);
 
 
-module.exports = router;
+module.exports = router.routes();

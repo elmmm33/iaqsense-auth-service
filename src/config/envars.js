@@ -5,17 +5,6 @@ let defaultConfig = {
   projectId: "evq-sense-development",
   keyFileName: "EVQ Sense Development-cf5e8a21fddc.json",
   bigqueryDataSetID: "evqsense_iaq_dev"
-
-  // mysqlHost: '104.199.199.24',
-  // mysqlPort: '3306',
-  // mysqlUser: 'root',
-  // mysqlPassword: 'gMMPJGbMjs0yInJB7',
-  // mysqlDatabase: 'evqsense',
-  // mysqlSocketPath: '/cloudsql/evq-sense:asia-east1:evqsene-dev-mysql'
-  // authServiceUrl: 'https://auth-service-dev-s44htm3y3q-an.a.run.app',
-  // cloudStorageBucketName: 'tvb-ad-admin-cms-files',
-  // cloudStorageBucketPath:
-  //   'https://storage.googleapis.com/tvb-ad-admin-cms-files'
 };
 
 if (process.env.NODE_ENV == "development") {

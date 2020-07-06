@@ -1,22 +1,19 @@
-const User = require("../../models").User;
-const Session = require("../../models").Session;
 const {
   jwtSecret,
   jwtVerify,
   sessionExpireDate
-} = require("../../utils/user-help-function");
-const moment = require("moment");
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
-moment.tz.setDefault("Asia/Hong_Kong");
-Sequelize.DATE.prototype._stringify = function _stringify(date, options) {
-  return this._applyTimezone(date, options).format("YYYY-MM-DD HH:mm:ss.SSS");
-};
+} = require("../../lib/user-help-function");
+const { HTTP_STATUS } = require('../../lib/constants');
+const Firestore = require("@google-cloud/firestore");
+const db = require("../../lib/firestore");
 
-const verify = async (req, res) => {
+const moment = require("moment");
+moment.tz.setDefault("Asia/Hong_Kong");
+
+const verify = async ctx => {
   try {
-    if (req.headers.authorization) {
-      const token = req.headers.authorization.split(" ")[1];
+    if (ctx.request.headers.authorization) {
+      const token = ctx.request.headers.authorization.split(" ")[1];
 
       const jwtRes = await jwtVerify(token, jwtSecret).catch(err => {
         logger.error(err);
@@ -24,28 +21,29 @@ const verify = async (req, res) => {
       });
       if (jwtRes) {
         const { id } = jwtRes;
-        let reply = await Session.findOne({
-          where: {
-            userId: id,
-            expiredAt: {
-              [Op.gte]: moment().format()
-            }
-          }
-        });
-        if (reply) {
+        const sessions = await db.collection('sessions')
+          .where("user", "==", db.doc(`users/${id}`))
+          .where("expireTime", ">=", Firestore.Timestamp.now())
+          .get();
+        if (sessions) {
           // update expired date
-          let expiredAt = sessionExpireDate(12);
-          await reply.update({ expiredAt }).catch(err => {
-            console.log(err);
-            throw new Error("update Session Expired Date Failed");
-          });
+          let session, sessionId;
+          sessions.forEach(doc => { sessionId = doc.id;; session = doc.data() });
 
-          res.json({
+          try {
+            await db.collection('sessions').doc(sessionId).update({ expiredTime: Firestore.Timestamp.fromDate(expiredTime) })
+          } catch (err) {
+            logger.error(err);
+            throw new Error("update Session Expired Date Failed");
+          };
+
+          ctx.status = HTTP_STATUS.OK;
+          ctx.body = {
             success: true,
             msg: null,
             result: jwtRes,
             moment: moment().format()
-          });
+          };
         } else {
           throw new Error("Token expired.");
         }
@@ -56,12 +54,13 @@ const verify = async (req, res) => {
       throw new Error("No token provided.");
     }
   } catch (e) {
-    res.json({
+    ctx.status = HTTP_STATUS.UNAUTHORIZED;
+    ctx.body = {
       success: false,
       msg: e.message.toString(),
       result: null,
       moment: moment().format()
-    });
+    };
   }
 };
 
