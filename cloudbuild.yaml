@@ -1,0 +1,25 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia.gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:1.0.0', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia.gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:1.0.0']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      [
+        'beta',
+        'run',
+        'deploy',
+        '${_SERVICE_NAME}',
+        '--image',
+        'asia.gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:1.0.0',
+        '--set-env-vars',
+        'NODE_ENV=${_NODE_ENV}',
+        '--region',
+        'asia-northeast1',
+        '--platform',
+        'managed',
+        '--allow-unauthenticated',
+        '--quiet',
+      ]
+images:
+  - asia.gcr.io/${_PROJECT_ID}/${_IMAGE_NAME}:1.0.0
