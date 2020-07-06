@@ -1,9 +1,9 @@
-const User = require("../../models").User;
-const Session = require("../../models").Session;
+// const User = require("../../models").User;
+// const Session = require("../../models").Session;
 const crypto = require("crypto");
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
-const Sequelize = require("sequelize");
+
 const {
   jwtSecret,
   hashToSha256,
