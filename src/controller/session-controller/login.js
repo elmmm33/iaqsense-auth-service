@@ -1,6 +1,6 @@
 // const crypto = require("crypto");
 const logger = require("../../lib/logger");
-const moment = require("moment");
+const moment = require('moment-timezone');
 const jwt = require("jsonwebtoken");
 const { HTTP_STATUS } = require("../../lib/constants");
 
@@ -31,7 +31,7 @@ module.exports = async ctx => {
     if (user) {
       if (user.password === hashPassword) {
         const payload = {
-          id: user.id,
+          id: userId,
           email,
           role: user.role,
           isVerified: user.isVerified
@@ -60,7 +60,8 @@ module.exports = async ctx => {
               .collection("sessions")
               .doc(sessionId)
               .update({
-                expiredTime: Firestore.Timestamp.fromDate(expiredTime)
+                token,
+                expiredTime: Firestore.Timestamp.fromMillis(expiredTime)
               });
           } catch (err) {
             logger.error(err);
@@ -71,7 +72,7 @@ module.exports = async ctx => {
             await db.collection("sessions").add({
               user: db.doc(`users/${userId}`),
               token,
-              expiredTime: Firestore.Timestamp.fromDate(expiredTime)
+              expiredTime: Firestore.Timestamp.fromMillis(expiredTime)
             });
           } catch (err) {
             logger.error(err);

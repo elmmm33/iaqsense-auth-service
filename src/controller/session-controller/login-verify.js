@@ -4,9 +4,11 @@ const {
   jwtVerify,
   sessionExpireDate
 } = require("../../lib/user-help-function");
+const logger = require("../../lib/logger");
 const { HTTP_STATUS } = require("../../lib/constants");
 const Firestore = require("@google-cloud/firestore");
 const db = require("../../lib/firestore");
+const firestore = require("../../lib/firestore");
 
 module.exports = async ctx => {
   try {
@@ -22,7 +24,7 @@ module.exports = async ctx => {
         const sessions = await db
           .collection("sessions")
           .where("user", "==", db.doc(`users/${id}`))
-          .where("expireTime", ">=", Firestore.Timestamp.now())
+          .where("expiredTime", ">=", Firestore.Timestamp.now())
           .get();
 
         let session, sessionId;
@@ -33,11 +35,13 @@ module.exports = async ctx => {
         if (sessionId) {
           // update expired date
           try {
+            let expiredTime = sessionExpireDate(12);
+
             await db
               .collection("sessions")
               .doc(sessionId)
               .update({
-                expiredTime: Firestore.Timestamp.fromDate(expiredTime)
+                expiredTime: Firestore.Timestamp.fromMillis(expiredTime)
               });
           } catch (err) {
             logger.error(err);

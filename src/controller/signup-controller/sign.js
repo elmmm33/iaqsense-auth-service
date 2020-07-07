@@ -13,12 +13,14 @@ const { doc } = require("prettier");
 module.exports = async ctx => {
   const { email, firstName, lastName } = ctx.request.body;
   let randomPassword = generateRandomPassword(8);
-  logger.info(email, randomPassword);
+  logger.info(`${email} ${randomPassword}`);
   const users = await db
     .collection("users")
     .where("email", "==", email)
     .get();
+
   if (!users.empty) {
+    users.forEach(doc=>{ logger.info(`user found ${doc.id}`) });
     ctx.status = HTTP_STATUS.BAD_REQUEST;
     ctx.body = {
       success: false,
@@ -37,7 +39,8 @@ module.exports = async ctx => {
         createTime: Firestore.Timestamp.now(),
         updateTime: Firestore.Timestamp.now()
       });
-      const token = cryptoRandomString({ length: 16 });
+      console.log(user.id);
+      const token = cryptoRandomString(16);
       let verificationToken = await db.collection("verificationtoken").add({
         user: db.doc(`users/${user.id}`),
         token
@@ -55,7 +58,7 @@ module.exports = async ctx => {
           ctx.status = HTTP_STATUS.OK;
           ctx.body = {
             success: true,
-            msg: `${user.email} account created successfully`,
+            msg: `${email} account created successfully`,
             result: null
           };
         } catch (e) {

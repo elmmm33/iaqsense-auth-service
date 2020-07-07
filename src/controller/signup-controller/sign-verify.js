@@ -22,7 +22,7 @@ module.exports = async ctx => {
     if (user) {
       if (user.isVerified === 1) {
         ctx.body = fs.createReadStream(
-          path.join(__dirname + "/verify-ok.html")
+          path.join(__dirname + "../../../views/verify-ok.html")
         );
       } else {
         const tokens = await db
@@ -36,20 +36,20 @@ module.exports = async ctx => {
             .update({ isVerified: 1, updateTime: Firestore.Timestamp.now() });
 
           ctx.body = fs.createReadStream(
-            path.join(__dirname + "/verify-success.html")
+            path.join(__dirname + "../../../views/verify-success.html")
           );
         } else {
           ctx.body = fs.createReadStream(
-            path.join(__dirname + "/verify-error.html")
+            path.join(__dirname + "../../../views/verify-error.html")
           );
         }
       }
     } else {
       ctx.body = fs.createReadStream(
-        path.join(__dirname + "/verify-error-not-found.html")
+        path.join(__dirname + "../../../views/verify-error-not-found.html")
       );
     }
   } catch (e) {
-    ctx.body = fs.createReadStream(path.join(__dirname + "/verify-error.html"));
+    ctx.body = fs.createReadStream(path.join(__dirname + "../../../views/verify-error.html"));
   }
 };

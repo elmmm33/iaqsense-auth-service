@@ -25,8 +25,8 @@ const jwtVerify = (token, jwtSecret) => {
 
 const sessionExpireDate = period => {
   return moment()
-    .add(period, "hours")
-    .toDate();
+    .add(period, "h")
+    .valueOf();
   // .format("YYYY-MM-DD HH:mm:ss");
 };
 
@@ -66,7 +66,7 @@ const sendVerificationEmail = (to, hosturl, token, email, password) => {
       "Hello,\n\n" +
       "Please verify your IAQ Smart Device account by clicking the link: \nhttp://" +
       hosturl +
-      "/user-service/verification?token=" +
+      "/verification?token=" +
       token +
       "&email=" +
       email +
@@ -74,7 +74,7 @@ const sendVerificationEmail = (to, hosturl, token, email, password) => {
       "Your Password is: \n" +
       password
   };
-
+  console.log(msg);
   sg.send(msg);
 };
 
