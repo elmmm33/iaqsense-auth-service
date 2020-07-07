@@ -74,7 +74,7 @@ const sendVerificationEmail = (to, hosturl, token, email, password) => {
       "Your Password is: \n" +
       password
   };
-  console.log(msg);
+  // console.log(msg);
   sg.send(msg);
 };
 

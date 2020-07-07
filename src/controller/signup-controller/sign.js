@@ -34,7 +34,7 @@ module.exports = async ctx => {
         firstName,
         lastName,
         isVerified: 0,
-        password: randomPassword,
+        password: hashPassword(randomPassword),
         role: 1,
         createTime: Firestore.Timestamp.now(),
         updateTime: Firestore.Timestamp.now()
