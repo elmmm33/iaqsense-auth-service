@@ -11,9 +11,10 @@ const db = require("../../lib/firestore");
 const firestore = require("../../lib/firestore");
 
 module.exports = async ctx => {
+  const { authToken: token } = ctx.query;
   try {
-    if (ctx.request.headers.authorization) {
-      const token = ctx.request.headers.authorization.split(" ")[1];
+    if (token) {
+      // const token = ctx.request.headers.authorization.split(" ")[1];
 
       const jwtRes = await jwtVerify(token, jwtSecret).catch(err => {
         logger.error(err);
