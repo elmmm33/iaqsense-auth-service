@@ -1,10 +1,7 @@
 let defaultConfig = {
   port: process.env.PORT,
-  calibrationServiceUrl:
-    "https://evqsense-calibration-service-dev-3togabxujq-an.a.run.app",
   projectId: "evq-sense-development",
-  keyFileName: "EVQ Sense Development-cf5e8a21fddc.json",
-  bigqueryDataSetID: "evqsense_iaq_dev"
+  keyFileName: "EVQ Sense Development-cf5e8a21fddc.json"
 };
 
 if (process.env.NODE_ENV == "development") {

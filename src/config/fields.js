@@ -1,9 +1,7 @@
 module.exports = [
   "port",
-  "calibrationServiceUrl",
   "projectId",
-  "keyFileName",
-  "bigqueryDataSetID"
+  "keyFileName"
   // 'mysqlHost',
   // 'mysqlPort',
   // 'mysqlUser',
