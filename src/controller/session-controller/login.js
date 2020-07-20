@@ -1,6 +1,6 @@
 // const crypto = require("crypto");
 const logger = require("../../lib/logger");
-const moment = require('moment-timezone');
+const moment = require("moment-timezone");
 const jwt = require("jsonwebtoken");
 const { HTTP_STATUS } = require("../../lib/constants");
 
@@ -32,6 +32,8 @@ module.exports = async ctx => {
       if (user.password === hashPassword) {
         const payload = {
           id: userId,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email,
           role: user.role,
           isVerified: user.isVerified
