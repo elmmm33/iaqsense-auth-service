@@ -43,7 +43,7 @@ module.exports = async ctx => {
           expiresIn: "5d"
         });
 
-        let expiredTime = sessionExpireDate(12);
+        let expiredTime = sessionExpireDate(1);
         logger.info(userId, user.email, expiredTime);
 
         const sessions = await db

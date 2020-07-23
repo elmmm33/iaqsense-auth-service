@@ -36,7 +36,7 @@ module.exports = async ctx => {
         if (sessionId) {
           // update expired date
           try {
-            let expiredTime = sessionExpireDate(12);
+            let expiredTime = sessionExpireDate(1);
 
             await db
               .collection("sessions")
