@@ -104,7 +104,8 @@ module.exports = async ctx => {
       success: false,
       msg: e.message.toString() || "Login failed",
       result: null,
-      moment: moment().format()
+      moment: moment().format(),
+      action: "RELOGIN"
     };
   }
 };
