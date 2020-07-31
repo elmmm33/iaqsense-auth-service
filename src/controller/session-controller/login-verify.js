@@ -21,7 +21,16 @@ module.exports = async ctx => {
         throw new Error("Invalid token.");
       });
       if (jwtRes) {
-        const { id } = jwtRes;
+        const { id, role } = jwtRes;
+        if (role === 0) {
+          ctx.status = HTTP_STATUS.OK;
+          return (ctx.body = {
+            success: true,
+            msg: null,
+            result: jwtRes,
+            moment: moment().format()
+          });
+        }
         const sessions = await db
           .collection("sessions")
           .where("user", "==", db.doc(`users/${id}`))
