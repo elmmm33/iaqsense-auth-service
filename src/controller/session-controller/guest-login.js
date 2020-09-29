@@ -9,7 +9,7 @@ module.exports = async ctx => {
       role: 0 // 0: guest
     };
     const token = jwt.sign(payload, jwtSecret, {
-      expiresIn: "1h"
+      expiresIn: "30d"
     });
 
     ctx.status = HTTP_STATUS.OK;

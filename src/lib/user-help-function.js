@@ -25,7 +25,7 @@ const jwtVerify = (token, jwtSecret) => {
 
 const sessionExpireDate = period => {
   return moment()
-    .add(period, "h")
+    .add(period, "M")
     .valueOf();
   // .format("YYYY-MM-DD HH:mm:ss");
 };

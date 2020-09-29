@@ -40,7 +40,7 @@ module.exports = async ctx => {
         };
 
         const token = jwt.sign(payload, jwtSecret, {
-          expiresIn: "5d"
+          expiresIn: "30d"
         });
 
         let expiredTime = sessionExpireDate(1);
