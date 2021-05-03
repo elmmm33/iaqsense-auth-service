@@ -1,9 +1,9 @@
 @API_HOST = http://localhost:3001
 
-POST {{API_HOST}} HTTP/1.1
+POST {{API_HOST}}/signup HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
-device_id=9999&sleep=0&startup=1&temperature=6BF8&humidity=C3C4&pm25=001B&pm10=001F&co2=0305&voc=0B97&time=&irin=&irout=&co=&hcn=&seq=36AA&sumCheck=
+email=lesleytest001@gmail.com&lastName=&firstName=Lesley
 
 
 POST {{API_HOST}} HTTP/1.1

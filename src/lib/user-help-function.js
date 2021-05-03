@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const sg = require("@sendgrid/mail");
 
 sg.setApiKey(
-  "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"
+  "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"
 );
 
 const jwtSecret = "JWT_SECRET_ENV_SENSE_DEVLOPMENT";
@@ -60,7 +60,7 @@ const generateRandomPassword = length => {
 const sendVerificationEmail = (to, hosturl, token, email, password) => {
   const msg = {
     to: to,
-    from: "iaqsmartdevice2019@gmail.com",
+    from: "evqsense@gmail.com",
     subject: "Verify Your Email",
     text:
       "Hello,\n\n" +

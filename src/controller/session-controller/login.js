@@ -36,7 +36,8 @@ module.exports = async ctx => {
           lastName: user.lastName,
           email,
           role: user.role,
-          isVerified: user.isVerified
+          isVerified: user.isVerified,
+          devices: user.devices
         };
 
         const token = jwt.sign(payload, jwtSecret, {
