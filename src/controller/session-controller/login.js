@@ -37,7 +37,9 @@ module.exports = async ctx => {
           email,
           role: user.role,
           isVerified: user.isVerified,
-          devices: user.devices
+          devices: user.devices,
+          location: user.location,
+          is_hide_poor: true
         };
 
         const token = jwt.sign(payload, jwtSecret, {
