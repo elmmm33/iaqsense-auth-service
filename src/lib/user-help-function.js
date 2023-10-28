@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const sg = require("@sendgrid/mail");
 
 sg.setApiKey(
-  "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"
 );
 
 const jwtSecret = "JWT_SECRET_ENV_SENSE_DEVLOPMENT";
